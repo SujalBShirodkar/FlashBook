@@ -17,8 +17,9 @@ inline void printTimestamp() {
     fprintf(stderr, "[%02d:%02d:%02d.%06ld] ", t.tm_hour, t.tm_min, t.tm_sec, ts.tv_nsec / 1000L);
 }
 
-#define LOG(tag, fmt, ...)                                       \ 
+#define LOG(tag, fmt, ...)                                       \
     do {                                                         \
         printTimestamp();                                        \
-        fprintf(stderr, "[%-6s] " fmt "\n", tag, ##__VA_ARGS__); \           
-    } while(0)                                                   \
+        fprintf(stderr, "[%-6s] " fmt "\n", tag, ##__VA_ARGS__); \
+    } while(0)
+    
