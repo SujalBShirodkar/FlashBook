@@ -45,6 +45,13 @@ add_executable(test_book
 )
 
 # ---------------------------------------------------------
+# test_pool — memory pool correctness + benchmark
+# ---------------------------------------------------------
+add_executable(test_pool
+    tools/test_pool.cpp
+)
+
+# ---------------------------------------------------------
 # Installation (optional — just run from build/ dir)
 # ---------------------------------------------------------
 install(TARGETS flashbook order_sender DESTINATION bin)
