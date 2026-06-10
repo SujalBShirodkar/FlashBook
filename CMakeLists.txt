@@ -23,9 +23,11 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 add_executable(flashbook
     src/main.cpp
     src/udp_receiver.cpp
+    src/engine.cpp
+    src/order_book.cpp
 )
 
-# Link pthreads — needed for std::thread on Linux
+# Link pthreads — needed for pthread_create / setaffinity
 find_package(Threads REQUIRED)
 target_link_libraries(flashbook PRIVATE Threads::Threads)
 
