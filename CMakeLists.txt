@@ -34,7 +34,14 @@ target_link_libraries(flashbook PRIVATE Threads::Threads)
 # ---------------------------------------------------------
 add_executable(order_sender
     tools/order_sender.cpp
-    # order_sender only uses headers — no shared .cpp needed
+)
+
+# ---------------------------------------------------------
+# test_book — interactive order book CLI harness
+# ---------------------------------------------------------
+add_executable(test_book
+    tools/test_book.cpp
+    src/order_book.cpp
 )
 
 # ---------------------------------------------------------

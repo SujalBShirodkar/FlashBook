@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
         for (int i = 0; i < count; ++i) {
             Order o{};
             o.order_id = id_counter++;
-            o.price    = 1800000 + (uint64_t)(i % 10) * 500; // vary price slightly
+            o.price    = 1800000 + (uint64_t)(i % 10) * 500; 
             o.quantity = 100;
             o.side     = (i % 2 == 0) ? Side::BUY : Side::SELL;
             o.type     = OrderType::LIMIT;
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
         o.order_id = static_cast<uint64_t>(atoll(argv[4]));
         o.price    = 0;
         o.quantity = 0;
-        o.side     = Side::BUY;   // ignored for CANCEL
+        o.side     = Side::BUY;   
         o.type     = OrderType::CANCEL;
 
         sendOrder(fd, addr, o);

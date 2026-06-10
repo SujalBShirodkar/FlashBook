@@ -1,0 +1,30 @@
+# FlashBook sample replay file
+# Format: buy/sell <id> <price*10000> <qty>
+# Price: $180.25 = 1802500
+
+# --- Build up the bid side ---
+buy  1  1802500  100
+buy  2  1802500  200
+buy  3  1802000  150
+buy  4  1801500  400
+buy  5  1801000  300
+
+# --- Build up the ask side (no cross yet) ---
+sell  6  1803000  200
+sell  7  1803500  500
+sell  8  1804000  100
+
+# --- Print book before any match ---
+print
+
+# --- This sell crosses the best bid (180.25) → TRADE! ---
+sell  9  1802500   80
+
+# --- This sell partially fills two bid levels ---
+sell  10  1802000  400
+
+# --- Cancel a resting order ---
+cancel 4
+
+# --- Final book state ---
+print
