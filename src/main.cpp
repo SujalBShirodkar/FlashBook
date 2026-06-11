@@ -45,7 +45,7 @@ void logRecv(const Order& o) {
 
 int main(int argc, char* argv[]) {
     uint16_t port         = 9001;
-    int      net_core     = 0;   
+    int      net_core     = 0;  
     int      engine_core  = 1;   
     bool     pin_cores    = false;
 
@@ -113,6 +113,7 @@ int main(int argc, char* argv[]) {
     printf("╚══════════════════════════════════════════════════╝\n");
 
     engine.printBook();
+    engine.printLatency();
 
     return 0;
 }

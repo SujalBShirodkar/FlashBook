@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "latency.h"
 #include "logger.h"
 #include <cstdio>
 #include <stdexcept>
@@ -86,6 +87,13 @@ void Engine::run() {
 
         const Order& order = *maybe_order;
         orders_processed_.fetch_add(1, std::memory_order_relaxed);
+
+        if (order.recv_tsc != 0) {
+            uint64_t now_tsc   = rdtscp();
+            uint64_t ticks     = now_tsc - order.recv_tsc;
+            double   latency_ns = globalClock().ticksToNs(ticks);
+            latency_.record(latency_ns);
+        }
 
         if (order.type == OrderType::CANCEL) {
             book_.cancelOrder(order.order_id);

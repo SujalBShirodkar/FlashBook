@@ -16,6 +16,22 @@ static uint64_t nowNs() {
         Clock::now().time_since_epoch()).count();
 }
 
+template<typename T>
+inline void doNotOptimize(T const& val) {
+    asm volatile("" : : "r,m"(val) : "memory");
+}
+
+static Order makeOrder(uint64_t id, uint64_t price, uint32_t qty, Side side) {
+    Order o{};
+    o.order_id = id;
+    o.price    = price;
+    o.recv_tsc = 0;
+    o.quantity = qty;
+    o.side     = side;
+    o.type     = OrderType::LIMIT;
+    return o;
+}
+
 void test_basic() {
     printf("\n[TEST 1] Basic alloc/free\n");
 
@@ -27,9 +43,9 @@ void test_basic() {
     Order* b = pool.alloc();
     Order* c = pool.alloc();
 
-    new (a) Order{1, 1802500, 100, Side::BUY,  OrderType::LIMIT, {0,0}};
-    new (b) Order{2, 1799500,  50, Side::SELL, OrderType::LIMIT, {0,0}};
-    new (c) Order{3, 1801000, 200, Side::BUY,  OrderType::LIMIT, {0,0}};
+    new (a) Order(makeOrder(1, 1802500, 100, Side::BUY));
+    new (b) Order(makeOrder(2, 1799500,  50, Side::SELL));
+    new (c) Order(makeOrder(3, 1801000, 200, Side::BUY));
 
     assert(pool.usedCount() == 3);
     assert(pool.freeCount() == 5);
@@ -61,7 +77,7 @@ void test_exhaustion() {
 
     for (int i = 0; i < 4; ++i) {
         Order* o = pool.alloc();
-        new (o) Order{(uint64_t)i, 1800000, 10, Side::BUY, OrderType::LIMIT, {0,0}};
+        new (o) Order(makeOrder((uint64_t)i, 1800000, 10, Side::BUY));
         ptrs.push_back(o);
     }
     assert(pool.freeCount() == 0);
@@ -93,8 +109,8 @@ void test_lifo_reuse() {
     Order* a = pool.alloc();
     Order* b = pool.alloc();
 
-    pool.free(b); 
-    pool.free(a); 
+    pool.free(b);
+    pool.free(a);
 
     Order* first  = pool.alloc();
     Order* second = pool.alloc();
@@ -105,11 +121,6 @@ void test_lifo_reuse() {
 
     pool.free(first);
     pool.free(second);
-}
-
-template<typename T>
-inline void doNotOptimize(T const& val) {
-    asm volatile("" : : "r,m"(val) : "memory");
 }
 
 void test_benchmark() {
@@ -124,8 +135,7 @@ void test_benchmark() {
 
         for (int i = 0; i < ITERS; ++i) {
             Order* o = pool.alloc();
-            new (o) Order{(uint64_t)i, 1800000, 100,
-                          Side::BUY, OrderType::LIMIT, {0,0}};
+            new (o) Order(makeOrder((uint64_t)i, 1800000, 100, Side::BUY));
             doNotOptimize(o->order_id);
             pool.free(o);
         }
@@ -141,8 +151,7 @@ void test_benchmark() {
 
         for (int i = 0; i < ITERS; ++i) {
             Order* o = static_cast<Order*>(malloc(sizeof(Order)));
-            new (o) Order{(uint64_t)i, 1800000, 100,
-                          Side::BUY, OrderType::LIMIT, {0,0}};
+            new (o) Order(makeOrder((uint64_t)i, 1800000, 100, Side::BUY));
             doNotOptimize(o->order_id);
             o->~Order();
             ::free(o);

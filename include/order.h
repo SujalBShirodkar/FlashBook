@@ -1,34 +1,38 @@
 #pragma once
 #include <cstdint>
-#include<string>
+#include <cstdio>
+#include <string>
 
-enum class Side : uint8_t{
-    BUY=0,
-    SELL=1
+enum class Side : uint8_t {
+    BUY  = 0,
+    SELL = 1
 };
 
-enum class OrderType : uint8_t{
-    LIMIT=0,
-    CANCEL=1
+enum class OrderType : uint8_t {
+    LIMIT  = 0,
+    CANCEL = 1
 };
 
-struct alignas(8) Order{
-    uint64_t order_id;
-    uint64_t price;
-    uint32_t quantity;
-    Side side;
+struct alignas(8) Order {
+    uint64_t  order_id;
+    uint64_t  price;       
+    uint64_t  recv_tsc;    
+    uint32_t  quantity;
+    Side      side;
     OrderType type;
-    uint8_t _pad[2];
+    uint8_t   _pad[2];
 };
 
-static_assert(sizeof(Order) == 24, "Order struct must be exactly 24 bytes");
-static_assert(alignof(Order) == 8, "Order struct must be 8-byte aligned");
+static_assert(sizeof(Order) == 32, "Order must be 32 bytes");
+static_assert(alignof(Order) == 8, "Order must be 8-byte aligned");
 
 inline std::string priceToString(uint64_t price) {
     uint64_t whole = price / 10000;
     uint64_t frac  = price % 10000;
     char buf[32];
-    snprintf(buf, sizeof(buf), "%llu.%04llu", (unsigned long long)whole, (unsigned long long)frac);
+    snprintf(buf, sizeof(buf), "%llu.%04llu",
+             (unsigned long long)whole,
+             (unsigned long long)frac);
     return buf;
 }
 

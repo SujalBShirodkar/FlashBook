@@ -54,6 +54,16 @@ add_executable(test_pool
 )
 
 # ---------------------------------------------------------
+# bench_latency — pure engine latency benchmark (no UDP)
+# ---------------------------------------------------------
+add_executable(bench_latency
+    tools/bench_latency.cpp
+    src/engine.cpp
+    src/order_book.cpp
+)
+target_link_libraries(bench_latency PRIVATE Threads::Threads)
+
+# ---------------------------------------------------------
 # Installation (optional — just run from build/ dir)
 # ---------------------------------------------------------
 install(TARGETS flashbook order_sender DESTINATION bin)

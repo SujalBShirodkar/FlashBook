@@ -1,4 +1,5 @@
 #include "udp_receiver.h"
+#include "latency.h"
 #include "logger.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -70,7 +71,7 @@ void UDPReceiver::start(OrderCallback cb) {
             sock_fd_,
             buf,
             sizeof(buf),
-            0,                                         
+            0,                                        
             reinterpret_cast<sockaddr*>(&sender),
             &sender_len
         );
@@ -90,7 +91,9 @@ void UDPReceiver::start(OrderCallback cb) {
             continue;
         }
 
-        const Order& order = *reinterpret_cast<const Order*>(buf);
+        uint64_t tsc_now = rdtsc();
+        Order& order = *reinterpret_cast<Order*>(buf);
+        order.recv_tsc = tsc_now;
 
         recv_count_.fetch_add(1, std::memory_order_relaxed);
         cb(order);

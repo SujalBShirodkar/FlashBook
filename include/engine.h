@@ -2,6 +2,7 @@
 #include "order_book.h"
 #include "spsc_queue.h"
 #include "memory_pool.h"
+#include "latency.h"
 #include "order.h"
 #include "logger.h"
 #include <atomic>
@@ -28,8 +29,10 @@ public:
 
     void printBook() const;
 
+    void printLatency() const { latency_.report("Order-to-match latency"); }
+
 private:
-    void run();   
+    void run();
 
     static void* threadEntry(void* arg) {
         static_cast<Engine*>(arg)->run();
@@ -38,12 +41,14 @@ private:
 
     OrderQueue&   queue_;
     OrderBook     book_;
-    MemoryPool<Order, 8192> pool_;  
+    MemoryPool<Order, 8192> pool_;
 
     pthread_t     thread_{};
-    int           cpu_affinity_{-1};  
+    int           cpu_affinity_{-1};
     std::atomic<bool> running_{false};
 
     std::atomic<uint64_t> orders_processed_{0};
     std::atomic<uint64_t> trades_executed_{0};
+
+    mutable LatencyStats<500000> latency_;
 };
