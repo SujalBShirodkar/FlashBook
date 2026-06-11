@@ -64,6 +64,18 @@ add_executable(bench_latency
 target_link_libraries(bench_latency PRIVATE Threads::Threads)
 
 # ---------------------------------------------------------
+# cli — interactive CLI harness (sends orders over UDP)
+# ---------------------------------------------------------
+add_executable(cli
+    tools/cli.cpp
+)
+
+# ---------------------------------------------------------
+# All targets get tuning.h via the shared include path
+# No extra .cpp needed — tuning.h is header-only
+# ---------------------------------------------------------
+
+# ---------------------------------------------------------
 # Installation (optional — just run from build/ dir)
 # ---------------------------------------------------------
 install(TARGETS flashbook order_sender DESTINATION bin)

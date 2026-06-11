@@ -3,6 +3,7 @@
 #include "spsc_queue.h"
 #include "order.h"
 #include "logger.h"
+#include "tuning.h"
 #include <csignal>
 #include <cstdio>
 #include <atomic>
@@ -45,7 +46,7 @@ void logRecv(const Order& o) {
 
 int main(int argc, char* argv[]) {
     uint16_t port         = 9001;
-    int      net_core     = 0;  
+    int      net_core     = 0;   
     int      engine_core  = 1;   
     bool     pin_cores    = false;
 
@@ -71,6 +72,11 @@ int main(int argc, char* argv[]) {
     printf("CPU pinning : %s\n", pin_cores ? "ON" : "OFF (pass --pin to enable)");
     printf("Press Ctrl+C to stop.\n\n");
     fflush(stdout);
+
+    printSystemInfo();
+    lockMemory();          
+    setRealtimeScheduling(); 
+    printCpuTuningInstructions();
 
     Engine engine(g_queue);
     g_engine = &engine;
